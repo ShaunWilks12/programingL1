@@ -1,0 +1,207 @@
+<!doctype html>
+
+<head>
+    <title>Game</title>
+</head>
+
+<body>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <script>
+        var canvas, canvasContext;
+
+        window.onload = function() {
+            canvas = document.getElementById('gameCanvas');
+            canvasContext = canvas.getContext('2d');
+
+            document.addEventListener('keydown', keyPressed);
+            document.addEventListener('keyup', keyReleased);
+
+            setInterval(mainloop, 1000 / 50); // frame rate 
+        }
+
+        // player variables
+        var playerXpos = 0;
+        var playerYpos = 0;
+        const PLAYER_SIZE = 20;
+        var playerXspeed = 2;
+        var playerYspeed = 2;
+        
+        var enemyXpos = 0;
+        var enemyYpos = 0;
+        const ENEMY_SIZE = 10;
+        var enemyXspeed = 2;
+        var enemyYspeed = 2;
+
+        const LEFT_KEY = 37;
+        const RIGHT_KEY = 39;
+        const UP_KEY = 38;
+        const DOWN_KEY = 40;
+
+        var leftKeyPressed = false;
+        var rightKeyPressed = false;
+        var upKeyPressed = false;
+        var downKeyPressed = false;
+
+        var startingPos = true;
+        
+        var hit = false;
+
+        var obXpos = 140;
+        var obYpos = 80;
+        var obWidth = 280;
+        var obHeight = 40;
+        var objectCounter = 0;
+        var totalObjects = 4;
+        
+        var edgeSpace = 20;
+        
+        var objects = [];
+
+        function mainloop() { // runs the loop 50 times per second
+            colorRect(0, 0, canvas.width, canvas.height, '#4A4847'); // Bg
+            colorRect(edgeSpace, edgeSpace, canvas.width - edgeSpace*2, canvas.height - edgeSpace*2, 'white');
+            colorRect(edgeSpace, edgeSpace, canvas.width - 320, canvas.height - 360, '#3DEE11'); // starting area
+            colorRect(obXpos, obYpos, obWidth, obHeight, '#11CCEE'); // object
+            colorRect(playerXpos, playerYpos, PLAYER_SIZE, PLAYER_SIZE, 'orange'); // player block
+            colorRect(enemyXpos, enemyYpos, ENEMY_SIZE, ENEMY_SIZE, 'red'); // enemy block
+            
+            playerMove();
+            obDraw();
+
+            if (startingPos) {
+                startPos();
+                addObjects();
+                startingPos = false;
+            }
+        }
+        
+        function obDraw(){
+            objects.forEach(function(object, index, array){
+                colorRect(object.obXpos2, object.obYpos2, object.obWidth2, object.obHeight2, '#11CCEE'); // object
+            });
+          }
+        
+        function addObjects(){
+            for(i = 0; i < totalObjects; i++){
+                objectCounter++;
+                
+                var obWidth2 = Math.floor(Math.random()*(200-60 )+140);
+                var obHeight2 = 40;
+                var obXpos2 = Math.floor(Math.random()*(canvas.width - obWidth2 - edgeSpace)+edgeSpace);
+                var obYpos2 = edgeSpace + (obHeight2 * 2) * objectCounter;
+                
+                var object = {
+                    obXpos2: obXpos2,
+                    obWidth2: obWidth2,
+                    obHeight2: obHeight2,
+                    obYpos2: obYpos2,
+                    obColor: 'blue'
+                }
+                objects.push(object);
+            }
+        }
+        
+        function startPos() { //starting postion of the player
+            playerXpos = canvas.width - 350;
+            playerYpos = canvas.height - 370;
+            obXpos = 100;
+            obYpos = 20;
+            enemyXpos = 150;
+            enemyYpos = 150;
+        }
+        
+
+        function keyPressed(evt) {
+            // console.log(evt.keyCode);
+            if (evt.keyCode == LEFT_KEY) {
+                leftKeyPressed = true;
+            }
+            if (evt.keyCode == RIGHT_KEY) {
+                rightKeyPressed = true;
+            }
+            if (evt.keyCode == UP_KEY) {
+                upKeyPressed = true;
+            }
+            if (evt.keyCode == DOWN_KEY) {
+                downKeyPressed = true;
+            }
+        }
+
+        function keyReleased(evt) {
+            if (evt.keyCode == LEFT_KEY) {
+                leftKeyPressed = false;
+            }
+            if (evt.keyCode == RIGHT_KEY) {
+                rightKeyPressed = false;
+            }
+            if (evt.keyCode == UP_KEY) {
+                upKeyPressed = false;
+            }
+            if (evt.keyCode == DOWN_KEY) {
+                downKeyPressed = false;
+            }
+        }
+        
+        function collision() {
+            objects.forEach(function(object,i){
+//                if (playerXpos + PLAYER_SIZE > object.obXpos2 &&
+//                    playerXpos < object.obXpos2 + object.obWidth2 &&
+//                    playerYpos + PLAYER_SIZE > object.obYpos2 &&
+//                    playerYpos < object.obYpos2 + object.obHeight2
+//                ) 
+                if(playerXpos > object.obXpos2)
+                { // checks for all sizes overlap
+                    return true; // func = true if hit 
+                    console.log('hit');
+                } else {
+                    return false; // func = false if not hitting
+                    console.log('missing');
+                }
+                
+            });
+        }
+
+        function playerMove() {
+
+            if (leftKeyPressed && playerXpos > 20) { // move and not out of screen
+                playerXpos -= playerXspeed; // normal move 
+                collision(); // run function to check if player overlap / hit
+                if (collision()) { // if hit true run this
+                    playerXpos += playerXspeed; // move back 1 move to undo overlap 
+                }
+            }
+
+            if (rightKeyPressed && playerXpos + PLAYER_SIZE < canvas.width - 20) {
+                playerXpos += playerXspeed;
+                collision();
+                if (collision()) {
+                    playerXpos -= playerXspeed;
+                }
+            }
+
+            if (upKeyPressed && playerYpos > 20) {
+                playerYpos -= playerYspeed;
+                collision();
+                if (collision()) {
+                    playerYpos += playerYspeed;
+                }
+            }
+
+            if (downKeyPressed && playerYpos + PLAYER_SIZE < canvas.height - 20) {
+                playerYpos += playerYspeed;
+                collision();
+                if (collision()) {
+                    playerYpos -= playerYspeed;
+                }
+            }
+        }
+       
+        // func for drawing colored rects on canvas  
+        function colorRect(x, y, w, h, c) {
+            canvasContext.fillStyle = c;
+            canvasContext.fillRect(x, y, w, h);
+        }
+
+    </script>
+</body>
