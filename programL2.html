@@ -26,12 +26,14 @@
         const PLAYER_SIZE = 20;
         var playerXspeed = 2;
         var playerYspeed = 2;
-        
+
         var enemyXpos = 0;
         var enemyYpos = 0;
         const ENEMY_SIZE = 10;
         var enemyXspeed = 2;
         var enemyYspeed = 2;
+        var enemyCounter = 8;
+        var totalEnemys = 8
 
         const LEFT_KEY = 37;
         const RIGHT_KEY = 39;
@@ -44,7 +46,7 @@
         var downKeyPressed = false;
 
         var startingPos = true;
-        
+
         var hit = false;
 
         var obXpos = 140;
@@ -53,64 +55,132 @@
         var obHeight = 40;
         var objectCounter = 0;
         var totalObjects = 4;
-        
+
         var edgeSpace = 20;
-        
+
+        var setup = true;
         var objects = [];
+        var enemys = [];
 
         function mainloop() { // runs the loop 50 times per second
             colorRect(0, 0, canvas.width, canvas.height, '#4A4847'); // Bg
-            colorRect(edgeSpace, edgeSpace, canvas.width - edgeSpace*2, canvas.height - edgeSpace*2, 'white');
+            colorRect(edgeSpace, edgeSpace, canvas.width - edgeSpace * 2, canvas.height - edgeSpace * 2, 'white');
             colorRect(edgeSpace, edgeSpace, canvas.width - 320, canvas.height - 360, '#3DEE11'); // starting area
             colorRect(obXpos, obYpos, obWidth, obHeight, '#11CCEE'); // object
             colorRect(playerXpos, playerYpos, PLAYER_SIZE, PLAYER_SIZE, 'orange'); // player block
             colorRect(enemyXpos, enemyYpos, ENEMY_SIZE, ENEMY_SIZE, 'red'); // enemy block
-            
+
             playerMove();
             obDraw();
+            enemyDraw();
+            collision();
+
+            if (setup) {
+                for (i = 0; i < totalObjects; i++) {
+                    addObject();
+                }
+                setup = false;
+            }
 
             if (startingPos) {
                 startPos();
-                addObjects();
                 startingPos = false;
             }
         }
-        
-        function obDraw(){
-            objects.forEach(function(object, index, array){
-                colorRect(object.obXpos2, object.obYpos2, object.obWidth2, object.obHeight2, '#11CCEE'); // object
+
+
+
+        function obDraw() {
+            objects.forEach(function(object, index, array) {
+                colorRect(object.obXpos2, object.obYpos2, object.obWidth2, object.OB_HEIGHT, '#11CCEE'); // object
             });
-          }
-        
-        function addObjects(){
-            for(i = 0; i < totalObjects; i++){
-                objectCounter++;
-                
-                var obWidth2 = Math.floor(Math.random()*(200-60 )+140);
-                var obHeight2 = 40;
-                var obXpos2 = Math.floor(Math.random()*(canvas.width - obWidth2 - edgeSpace)+edgeSpace);
-                var obYpos2 = edgeSpace + (obHeight2 * 2) * objectCounter;
-                
-                var object = {
-                    obXpos2: obXpos2,
-                    obWidth2: obWidth2,
-                    obHeight2: obHeight2,
-                    obYpos2: obYpos2,
-                    obColor: 'blue'
+        }
+
+        //        function addObjects() {
+        //            for (i = 0; i < totalObjects; i++) {
+        //                objectCounter++;
+        //
+        //                var obWidth2 = Math.floor(Math.random() * (200 - 60) + 140);
+        //                var obHeight2 = 40;
+        //                var obXpos2 = Math.floor(Math.random() * (canvas.width - obWidth2 - edgeSpace * 2) + edgeSpace);
+        //                var obYpos2 = edgeSpace + (obHeight2 * 2) * objectCounter;
+        //
+        //                var object = {
+        //                    obXpos2: obXpos2,
+        //                    obWidth2: obWidth2,
+        //                    obHeight2: obHeight2,
+        //                    obYpos2: obYpos2,
+        //                }
+        //                objects.push(object);
+        //            }
+
+        function addObject() {
+            var obWidth2 = Math.floor(Math.random() * (220 - 120) + 120);
+            obWidth2 = Math.round(obWidth2 / playerXspeed) * playerXspeed; // this is to ensure it is rounding to a divisible of 5 to stop gaps for collisions
+            const OB_HEIGHT = 40;
+            var obXpos2 = Math.floor(Math.random() * (canvas.width - obWidth2 - edgeSpace * 2) + edgeSpace);
+            var obYpos2 = edgeSpace + (OB_HEIGHT * 2) * objectCounter + 80;
+
+            if (objectCounter == 0) {
+                obXpos2 = Math.floor(Math.random() * (canvas.width - obWidth2 - edgeSpace * 2) + edgeSpace);
+                obXpos2 = Math.round(obXpos2 / playerXspeed) * playerXspeed; // rounding
+
+            } 
+                else {
+                obXpos2 = Math.floor(Math.random() * (canvas.width - obWidth2 - edgeSpace * 2) + edgeSpace);
+                obXpos2 = Math.round(obXpos2 / playerXspeed) * playerXspeed; // rounding
+            }
+
+            objectCounter++;
+
+            var object = {
+                obXpos2: obXpos2,
+                obWidth2: obWidth2,
+                OB_HEIGHT: OB_HEIGHT,
+                obYpos2: obYpos2,
+            }
+            objects.push(object);
+        }
+
+
+
+        function enemyDraw() {
+            objects.forEach(function(object, index, array) {
+                colorRect(enemyXpos, enemyYpos, ENEMY_SIZE, ENEMY_SIZE, 'red'); // enemy block
+            });
+        }
+
+        function addEnemy() {
+            for (i = 0; i < totalEnemys; i++) {
+                enemyCounter++;
+
+                var enemyWidth = Math.floor(Math.random() * (200 - 60) + 140);
+                var enemyHight = 20
+                var enemyXpos = Math.floor(Math.random() * (canvas.width - enemyXpos - edgeSpace * 2) + edgeSpace);
+                var enemyYpos = edgeSpace + (enemy * 2) * objectCounter;
+
+                var enemy = {
+                    enemyXpos: enemyXpos,
+                    enemyWidth: enemyWidth,
+                    enemyHight: enemyHight,
+                    enemyYpos: enemyYpos,
                 }
-                objects.push(object);
+                
+                enemyCounter++;
+                
+                objects.push(enemy);
             }
         }
-        
+
         function startPos() { //starting postion of the player
             playerXpos = canvas.width - 350;
             playerYpos = canvas.height - 370;
             obXpos = 100;
             obYpos = 20;
             enemyXpos = 150;
-            enemyYpos = 150;
+            enemyYpos = 145;
         }
-        
+
 
         function keyPressed(evt) {
             // console.log(evt.keyCode);
@@ -142,29 +212,45 @@
                 downKeyPressed = false;
             }
         }
-        
+
         function collision() {
-            objects.forEach(function(object,i){
-//                if (playerXpos + PLAYER_SIZE > object.obXpos2 &&
-//                    playerXpos < object.obXpos2 + object.obWidth2 &&
-//                    playerYpos + PLAYER_SIZE > object.obYpos2 &&
-//                    playerYpos < object.obYpos2 + object.obHeight2
-//                ) 
-                if(playerXpos > object.obXpos2)
-                { // checks for all sizes overlap
-                    return true; // func = true if hit 
-                    console.log('hit');
-                } else {
-                    return false; // func = false if not hitting
-                    console.log('missing');
+            objects.forEach(function(object, i) {
+                if (playerXpos + PLAYER_SIZE > object.obXpos2 &&
+                    playerXpos < object.obXpos2 + object.obWidth2 &&
+                    playerYpos + PLAYER_SIZE > object.obYpos2 &&
+                    playerYpos < object.obYpos2 + object.OB_HEIGHT) {
+
+                    if (rightKeyPressed) { // then figures out what you pressed to get he collsion
+                        playerXpos -= playerXspeed; // nullifies the move from the playermove func
+                    }
+                    if (leftKeyPressed) {
+                        playerXpos += playerXspeed;
+                    }
+                    if (upKeyPressed) {
+                        playerYpos += playerYspeed;
+                    }
+                    if (downKeyPressed) {
+                        playerYpos -= playerYspeed;
+                    }
                 }
-                
             });
+        }
+
+        function collision() { // collision for the constant object
+            if (playerXpos + PLAYER_SIZE > obXpos &&
+                playerXpos < obXpos + obWidth &&
+                playerYpos + PLAYER_SIZE > obYpos &&
+                playerYpos < obYpos + obHeight
+            ) { // checks for all sizes overlap
+                return true; // func = true if hit 
+            } else {
+                return false; // func = false if not hitting
+            }
         }
 
         function playerMove() {
 
-            if (leftKeyPressed && playerXpos > 20) { // move and not out of screen
+            if (leftKeyPressed && playerXpos > PLAYER_SIZE) { // move and not out of screen
                 playerXpos -= playerXspeed; // normal move 
                 collision(); // run function to check if player overlap / hit
                 if (collision()) { // if hit true run this
@@ -196,7 +282,7 @@
                 }
             }
         }
-       
+
         // func for drawing colored rects on canvas  
         function colorRect(x, y, w, h, c) {
             canvasContext.fillStyle = c;
