@@ -32,8 +32,8 @@
         const ENEMY_SIZE = 10;
         var enemyXspeed = 2;
         var enemyYspeed = 2;
-        var enemyCounter = 8;
-        var totalEnemys = 8
+        var enemyCounter = 4;
+        var totalEnemys = 8;
 
         const LEFT_KEY = 37;
         const RIGHT_KEY = 39;
@@ -72,12 +72,19 @@
 
             playerMove();
             obDraw();
+            
+            
             enemyDraw();
+            EnemyMove();
             collision();
 
+            
             if (setup) {
                 for (i = 0; i < totalObjects; i++) {
                     addObject();
+                }
+                for (i = 0; i < totalEnemys; i++) {
+                    addEnemy();
                 }
                 setup = false;
             }
@@ -87,7 +94,6 @@
                 startingPos = false;
             }
         }
-
 
 
         function obDraw() {
@@ -145,40 +151,63 @@
 
 
         function enemyDraw() {
-            objects.forEach(function(object, index, array) {
-                colorRect(enemyXpos, enemyYpos, ENEMY_SIZE, ENEMY_SIZE, 'red'); // enemy block
+            enemys.forEach(function(enemy, index, array) {
+                colorRect(enemy.enemyXpos, enemy.enemyYpos, enemy.ENEMY_SIZE, enemy.ENEMY_SIZE, 'red'); // enemy block
             });
         }
 
-        function addEnemy() {
-            for (i = 0; i < totalEnemys; i++) {
-                enemyCounter++;
-
-                var enemyWidth = Math.floor(Math.random() * (200 - 60) + 140);
-                var enemyHight = 20
-                var enemyXpos = Math.floor(Math.random() * (canvas.width - enemyXpos - edgeSpace * 2) + edgeSpace);
-                var enemyYpos = edgeSpace + (enemy * 2) * objectCounter;
-
-                var enemy = {
-                    enemyXpos: enemyXpos,
-                    enemyWidth: enemyWidth,
-                    enemyHight: enemyHight,
-                    enemyYpos: enemyYpos,
+        function EnemyMove() {
+            enemys.forEach(function(enemy,i){
+                enemy.enemyXpos += enemy.enemyXspeed;
+                if(enemy.enemyXpos + enemy.ENEMY_SIZE > canvas.width - edgeSpace){
+                    enemy.enemyXspeed *= -1; 
+                } 
+                if(enemy.enemyXpos < edgeSpace){
+                    enemy.enemyXspeed *= -1; 
                 }
+//                enemy.enemyXspeed = Math.floor(Math.random()*(5-3) +3);               
                 
-                enemyCounter++;
-                
-                objects.push(enemy);
-            }
+            });
         }
+        var enemyCounter2 = 0;
+        function addEnemy(){
+           
+            enemyCounter++
+            enemyCounter2 += 0.5;
+            
+           
+            const ENEMY_SIZE = 10
+            var enemyYpos = edgeSpace + (40 * 2) * enemyCounter - 355;
+            
+            console.log(enemyCounter2%1)
+            
+            if(enemyCounter2%1 == 0){
+                enemyCounter--;
+               enemyYpos = edgeSpace + (40 * 2) * enemyCounter + 20 - 355;
+//                console.log('second')
+            }
+            
+            var enemyXpos = Math.floor(Math.random() * (canvas.width - ENEMY_SIZE - edgeSpace * 2) + edgeSpace);
+                Math.floor(Math.random() * (canvas.width - ENEMY_SIZE - edgeSpace * 2) + edgeSpace);
+            var enemyXspeed = Math.floor(Math.random()*(4 - 2 ) + 2);
+             var enemy = {
+                enemyXpos: enemyXpos,
+                enemyYpos: enemyYpos,
+                ENEMY_SIZE: ENEMY_SIZE,
+                 enemyXspeed:enemyXspeed
+            }
+            enemys.push(enemy);
+//            colorRect(enemyXpos, enemyYpos, ENEMY_SIZE, ENEMY_SIZE, 'red');
+        }
+        
 
         function startPos() { //starting postion of the player
             playerXpos = canvas.width - 350;
             playerYpos = canvas.height - 370;
             obXpos = 100;
             obYpos = 20;
-            enemyXpos = 150;
-            enemyYpos = 145;
+//            enemyXpos = 150;
+//            enemyYpos = 145;
         }
 
 
