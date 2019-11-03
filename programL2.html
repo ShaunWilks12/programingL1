@@ -24,8 +24,8 @@
         var playerXpos = 0;
         var playerYpos = 0;
         const PLAYER_SIZE = 20;
-        var playerXspeed = 1.5;
-        var playerYspeed = 1.5;
+        var playerXspeed = 2;
+        var playerYspeed = 2;
 
         // enemy variables
         var enemyXpos = 0;
@@ -65,6 +65,25 @@
         var setup = true;
         var objects = [];
         var enemys = [];
+        var score = 0;
+        var lives = 3;
+        var gameRun = true;
+
+        var diffculty = '';
+        var pass = false;
+
+        while (pass == false) {
+            diffculty = prompt('what level of difficulty do you want', 'hard');
+            if (diffculty.toLowerCase() == 'easy' || diffculty.toLowerCase() == 'hard') {
+                pass = true;
+            }
+        }
+
+        if (diffculty == 'easy') {
+            var enemyXspeed = Math.floor(Math.random() * (4 - 2) + 2);
+        } else {
+
+        }
 
         function mainloop() { // runs the loop 50 times per second
             colorRect(0, 0, canvas.width, canvas.height, '#4A4847'); // Bg
@@ -72,12 +91,17 @@
             colorRect(edgeSpace, edgeSpace, canvas.width / 5, canvas.height / 10, '#3DEE11'); // starting area
             colorRect(obXpos, obYpos, obWidth, obHeight, '#11CCEE'); // object
             colorRect(playerXpos, playerYpos, PLAYER_SIZE, PLAYER_SIZE, 'orange'); // player block
+            colorText('score:' + score, 20, 19, '20px Arial', 'white')
+            colorText('lives:' + lives, 325, 19, '20px Arial', 'lime')
 
-//            playerMove();
+            if (playerYpos + PLAYER_SIZE >= canvas.height - edgeSpace) {
+                score++
+                startingPos = true;
+            }
+
             obDraw();
             enemyDraw();
             EnemyMove();
-//            collision();
             obPlayerMove();
 
 
@@ -95,7 +119,14 @@
                 startPos();
                 startingPos = false;
             }
-        }
+
+            if (lives >= 0) {
+                gameRun = false;
+            } else {
+                colorRect(0, 0, canvas.width, canvas.height, 'gray')
+                colorText('your score was: ' + score, 20, 19, '20px Arial', 'white')
+            }
+        } // end of main loop
 
 
         function obDraw() {
@@ -209,6 +240,7 @@
 
 
 
+
         function enemyDraw() {
             enemys.forEach(function(enemy, index, array) {
                 colorRect(enemy.enemyXpos, enemy.enemyYpos, enemy.ENEMY_SIZE, enemy.ENEMY_SIZE, 'red'); // enemy block
@@ -219,10 +251,12 @@
             enemys.forEach(function(enemy, i) {
                 enemy.enemyXpos += enemy.enemyXspeed;
                 if (enemy.enemyXpos + enemy.ENEMY_SIZE > canvas.width - edgeSpace) {
-                    enemy.enemyXspeed *= -1;
+                    enemy.enemyXspeed = Math.floor(Math.random() * (6 - 2) + 2) * -1;
+
                 }
                 if (enemy.enemyXpos < edgeSpace) {
                     enemy.enemyXspeed *= -1;
+
                 }
 
                 if (enemy.enemyXpos + enemy.ENEMY_SIZE > playerXpos && // player collision with enemys 
@@ -230,6 +264,7 @@
                     enemy.enemyYpos + ENEMY_SIZE > playerYpos &&
                     enemy.enemyYpos < playerYpos + PLAYER_SIZE) {
                     startingPos = true;
+                    lives--
                 }
             });
         }
@@ -255,7 +290,7 @@
 
             var enemyXpos = Math.floor(Math.random() * (canvas.width - ENEMY_SIZE - edgeSpace * 2) + edgeSpace);
             Math.floor(Math.random() * (canvas.width - ENEMY_SIZE - edgeSpace * 2) + edgeSpace);
-            var enemyXspeed = Math.floor(Math.random() * (4 - 2) + 2);
+            var enemyXspeed = Math.floor(Math.random() * (6 - 2) + 2);
             var enemy = {
                 enemyXpos: enemyXpos,
                 enemyYpos: enemyYpos,
@@ -272,8 +307,6 @@
             playerYpos = canvas.height / 13;
             obXpos = canvas.width / 4;
             obYpos = canvas.height / 20;
-            //            enemyXpos = 150;
-            //            enemyYpos = 145;
         }
 
 
@@ -358,46 +391,52 @@
             }
         }
 
-//        function playerMove() {
+        //        function playerMove() {
 
-            //            if (leftKeyPressed && playerXpos > PLAYER_SIZE) { // move and not out of screen
-            //                playerXpos -= playerXspeed; // normal move 
-            //                collision(); // run function to check if player overlap / hit
-            //
-            //                if (collision() || collisionArray()) { // if hit true run this
-            //                    playerXpos += playerXspeed; // move back 1 move to undo overlap 
-            //                }
-            //            }
+        //            if (leftKeyPressed && playerXpos > PLAYER_SIZE) { // move and not out of screen
+        //                playerXpos -= playerXspeed; // normal move 
+        //                collision(); // run function to check if player overlap / hit
+        //
+        //                if (collision() || collisionArray()) { // if hit true run this
+        //                    playerXpos += playerXspeed; // move back 1 move to undo overlap 
+        //                }
+        //            }
 
-//            if (rightKeyPressed && playerXpos + PLAYER_SIZE < canvas.width - 20) {
-//                playerXpos += playerXspeed;
-//                collision();
-//                if (collision()) {
-//                    playerXpos -= playerXspeed;
-//                }
-//            }
-//
-//            if (upKeyPressed && playerYpos > 20) {
-//                playerYpos -= playerYspeed;
-//                collision();
-//                if (collision()) {
-//                    playerYpos += playerYspeed;
-//                }
-//            }
-//
-//            if (downKeyPressed && playerYpos + PLAYER_SIZE < canvas.height - 20) {
-//                playerYpos += playerYspeed;
-//                collision();
-//                if (collision()) {
-//                    playerYpos -= playerYspeed;
-//                }
-//            }
-//        }
+        //            if (rightKeyPressed && playerXpos + PLAYER_SIZE < canvas.width - 20) {
+        //                playerXpos += playerXspeed;
+        //                collision();
+        //                if (collision()) {
+        //                    playerXpos -= playerXspeed;
+        //                }
+        //            }
+        //
+        //            if (upKeyPressed && playerYpos > 20) {
+        //                playerYpos -= playerYspeed;
+        //                collision();
+        //                if (collision()) {
+        //                    playerYpos += playerYspeed;
+        //                }
+        //            }
+        //
+        //            if (downKeyPressed && playerYpos + PLAYER_SIZE < canvas.height - 20) {
+        //                playerYpos += playerYspeed;
+        //                collision();
+        //                if (collision()) {
+        //                    playerYpos -= playerYspeed;
+        //                }
+        //            }
+        //        }
 
         // func for drawing colored rects on canvas  
         function colorRect(x, y, w, h, c) {
             canvasContext.fillStyle = c;
             canvasContext.fillRect(x, y, w, h);
+        }
+
+        function colorText(msg, x, y, f, c) { // text on screen
+            canvasContext.fillStyle = c;
+            canvasContext.font = f;
+            canvasContext.fillText(msg, x, y);
         }
 
     </script>
