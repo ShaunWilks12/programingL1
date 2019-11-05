@@ -18,7 +18,7 @@
             document.addEventListener('keyup', keyReleased);
 
             setInterval(mainloop, 1000 / 50); // frame rate 
-        }
+        } // end of canvas
 
         // player variables
         var playerXpos = 0;
@@ -79,7 +79,7 @@
             if (userName.length > 0) {
                 namePass = true;
             }
-        }
+        } // end of username prompt
 
         var diffculty = '';
         var pass = false;
@@ -94,7 +94,7 @@
                 playerXspeed = 1.8
                 playerYspeed = 1.8
             }
-        }
+        } // end of difficulty 
 
         if (diffculty == 'easy') {
             enemyXspeed = Math.floor(Math.random() * (2 - 1) + 2);
@@ -146,7 +146,7 @@
                 gameRun = false;
             } else {
                 colorRect(0, 0, canvas.width, canvas.height, 'gray')
-                colorText('your score was: ' + score, 20, 19, '20px Arial', 'black')
+                colorText(userName + ' your score was: ' + score, 20, 19, '20px Arial', 'black')
             }
         } // end of main loop
 
@@ -155,7 +155,7 @@
             objects.forEach(function(object, index, array) {
                 colorRect(object.obXpos2, object.obYpos2, object.obWidth2, object.OB_HEIGHT, '#11CCEE'); // object
             });
-        }
+        } // end of obDraw
 
         function obPlayerMove() {
             if (leftKeyPressed && playerXpos > PLAYER_SIZE) { // move and not out of screen
@@ -193,7 +193,7 @@
                         playerXpos -= playerXspeed; // move back 1 move to undo overlap 
                     }
                 });
-            }
+            } // end of rightKeyPress Move if statement
 
             if (upKeyPressed && playerYpos > 20) {
                 playerYpos -= playerYspeed;
@@ -211,7 +211,7 @@
                         playerYpos += playerYspeed; // move back 1 move to undo overlap 
                     }
                 });
-            }
+            } // end of upKeyPress Move if statement
 
             if (downKeyPressed && playerYpos + PLAYER_SIZE < canvas.height - 20) {
                 playerYpos += playerYspeed;
@@ -229,27 +229,27 @@
                         playerYpos -= playerYspeed; // move back 1 move to undo overlap 
                     }
                 });
-            }
+            } // end of downKeyPress Move if statement
 
-            if(playerYpos + PLAYER_SIZE >= canvas.height - edgeSpace ){
+            if (playerYpos + PLAYER_SIZE >= canvas.height - edgeSpace) {
                 startingPos = true;
-                enemys.forEach(function(enemy,i){
+                enemys.forEach(function(enemy, i) {
                     delete enemys[i];
                 });
-                objects.forEach(function(obj,i){
+                objects.forEach(function(obj, i) {
                     delete objects[i];
                 });
-                
+
                 enemys = enemys.filter(item => item !== undefined);
                 objects = objects.filter(item => item !== undefined);
                 objectCounter = 0;
                 enemyCounter = 4;
                 enemyCounter2 = 0;
-                enemyMaxSpeed++;
-                enemyMinSpeed++;
+                enemyMaxSpeed + .2;
+                enemyMinSpeed + .2;
                 setup = true;
             }
-        }
+        } //end of level system 
 
         function addObject() {
             var obWidth2 = Math.floor(Math.random() * (300 - 240) + 260);
@@ -276,16 +276,13 @@
                 obYpos2: obYpos2,
             }
             objects.push(object);
-        }
-
-
-
+        } //end of add object function
 
         function enemyDraw() {
             enemys.forEach(function(enemy, index, array) {
                 colorRect(enemy.enemyXpos, enemy.enemyYpos, enemy.ENEMY_SIZE, enemy.ENEMY_SIZE, 'red'); // enemy block
             });
-        }
+        } //end of enemy draw
 
         function EnemyMove() {
             enemys.forEach(function(enemy, i) {
@@ -307,7 +304,7 @@
                     lives--;
                 }
             });
-        }
+        } // end of enemy move
 
         var enemyCounter2 = 0;
 
@@ -325,7 +322,6 @@
             if (enemyCounter2 % 1 == 0) {
                 enemyCounter--;
                 enemyYpos = edgeSpace + (40 * 2) * enemyCounter + 20 - 355;
-                //                console.log('second')
             }
 
             var enemyXpos = Math.floor(Math.random() * (canvas.width - ENEMY_SIZE - edgeSpace * 2) + edgeSpace);
@@ -337,8 +333,7 @@
                 enemyXspeed: enemyXspeed
             }
             enemys.push(enemy);
-            //            colorRect(enemyXpos, enemyYpos, ENEMY_SIZE, ENEMY_SIZE, 'red');
-        }
+        } // end of add enemy
 
 
         function startPos() { //starting postion of the player
@@ -346,7 +341,7 @@
             playerYpos = canvas.height / 13;
             obXpos = canvas.width / 4;
             obYpos = canvas.height / 20;
-        }
+        } // end of starting pos
 
 
         function keyPressed(evt) {
@@ -363,7 +358,7 @@
             if (evt.keyCode == DOWN_KEY) {
                 downKeyPressed = true;
             }
-        }
+        } // end of key press
 
         function keyReleased(evt) {
             if (evt.keyCode == LEFT_KEY) {
@@ -378,45 +373,7 @@
             if (evt.keyCode == DOWN_KEY) {
                 downKeyPressed = false;
             }
-        }
-
-        //        function collision() {
-        //            objects.forEach(function(object, i) {
-        //                    if (rightKeyPressed) { // then figures out what you pressed to get he collsion
-        //                        playerXpos -= playerXspeed; // nullifies the move from the playermove func
-        //                    }
-        //                    if (leftKeyPressed && playerXpos > PLAYER_SIZE) { // move and not out of screen
-        //                        playerXpos -= playerXspeed; // normal move 
-        //                        collisionArray(); // run function to check if player overlap / hit
-        //                        if (collisionArray) { // if hit true run this
-        //                            playerXpos += playerXspeed; // move back 1 move to undo overlap 
-        //                        }
-        //                    }
-        //                    if (upKeyPressed) {
-        //                        playerYpos += playerYspeed;
-        //                    }
-        //                    if (downKeyPressed) {
-        //                        playerYpos -= playerYspeed;
-        //                    }
-        //            });
-        //        }
-
-        //            var hit = false;
-        //        function collisionArray() { // collision for the constant object
-        //            
-        //            objects.forEach(function(object,i){
-        //                if (playerXpos + PLAYER_SIZE > object.obXpos2 &&
-        //                    playerXpos < object.obXpos2 + object.obWidth2 &&
-        //                    playerYpos + PLAYER_SIZE > object.obYpos2 &&
-        //                    playerYpos < object.obYpos2 + object.OB_HEIGHT
-        //                ) { // checks for all sizes overlap
-        //                    hit = true;
-        //                } else {
-        ////                    hit = false;
-        //                }
-        //            });
-        //            return hit;
-        //        }
+        } // end of key release
 
         function collision() { // collision for the constant object
             if (playerXpos + PLAYER_SIZE > obXpos &&
@@ -428,55 +385,19 @@
             } else {
                 return false; // func = false if not hitting
             }
-        }
-
-        //        function playerMove() {
-
-        //            if (leftKeyPressed && playerXpos > PLAYER_SIZE) { // move and not out of screen
-        //                playerXpos -= playerXspeed; // normal move 
-        //                collision(); // run function to check if player overlap / hit
-        //
-        //                if (collision() || collisionArray()) { // if hit true run this
-        //                    playerXpos += playerXspeed; // move back 1 move to undo overlap 
-        //                }
-        //            }
-
-        //            if (rightKeyPressed && playerXpos + PLAYER_SIZE < canvas.width - 20) {
-        //                playerXpos += playerXspeed;
-        //                collision();
-        //                if (collision()) {
-        //                    playerXpos -= playerXspeed;
-        //                }
-        //            }
-        //
-        //            if (upKeyPressed && playerYpos > 20) {
-        //                playerYpos -= playerYspeed;
-        //                collision();
-        //                if (collision()) {
-        //                    playerYpos += playerYspeed;
-        //                }
-        //            }
-        //
-        //            if (downKeyPressed && playerYpos + PLAYER_SIZE < canvas.height - 20) {
-        //                playerYpos += playerYspeed;
-        //                collision();
-        //                if (collision()) {
-        //                    playerYpos -= playerYspeed;
-        //                }
-        //            }
-        //        }
+        } // end of collision 
 
         // func for drawing colored rects on canvas  
         function colorRect(x, y, w, h, c) {
             canvasContext.fillStyle = c;
             canvasContext.fillRect(x, y, w, h);
-        }
+        } // end of color rect
 
         function colorText(msg, x, y, f, c) { // text on screen
             canvasContext.fillStyle = c;
             canvasContext.font = f;
             canvasContext.fillText(msg, x, y);
-        }
+        } // end of color text
 
     </script>
 </body>
